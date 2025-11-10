@@ -9,12 +9,10 @@ import os, os.path, datetime
 from typing import Callable, Tuple, Union
 
 import torch, torch.backends.mps
-from corpus import TaggedCorpus
-from lexicon import build_lexicon                  
+from corpus import TaggedCorpus                
 from eval import model_cross_entropy, viterbi_error_rate, write_tagging, log as eval_log
 from hmm import HiddenMarkovModel
 from crf import ConditionalRandomField
-from crf_neural import ConditionalRandomFieldNeural
 
 log = logging.getLogger(Path(__file__).stem)  # For usage, see findsim.py in earlier assignment.
 
@@ -259,6 +257,7 @@ def parse_args() -> argparse.Namespace:
             args.new_model_class = HiddenMarkovModel
     else:                   # create some sort of CRF
         if args.rnn_dim or args.lexicon or args.problex:
+            from crf_neural import ConditionalRandomFieldNeural  # module provided with hw-rnn homework
             args.new_model_class = ConditionalRandomFieldNeural
         else: 
             args.new_model_class = ConditionalRandomField          
@@ -314,13 +313,14 @@ def main() -> None:
         # Build a new model of the required class from scratch, building vocab/tagset from training corpus.
         assert new_model_class is not None
         train_corpus = TaggedCorpus(*train_paths)
-        if not issubclass(new_model_class, ConditionalRandomFieldNeural):
-            # simple case
+        if not getattr(new_model_class, 'neural', False):
+            # simple non-neural model
             model = new_model_class(train_corpus.tagset, train_corpus.vocab, 
                                     unigram=args.unigram)
         else:
             # For a neural model, we have to call the constructor with extra arguments.
             # We start by making a lexicon of word embeddings.
+            from lexicon import build_lexicon  # module provided with hw-rnn homework
             if args.lexicon:
                 # The user gave us a file of pretrained lexical embeddings.
                 known_vocab = train_corpus.vocab   # save training vocab, since it may be replaced

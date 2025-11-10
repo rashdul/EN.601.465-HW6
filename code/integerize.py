@@ -158,6 +158,12 @@ class Integerizer(Generic[T]):
         for obj in iterable:
             self.add(obj)
 
+    def __str__(self) -> str:
+        """
+        String representation of the collection.
+        """
+        return f"Integerizer({list(self._objects)})"
+
 
 if __name__ == "__main__":
     import doctest
