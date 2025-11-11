@@ -94,7 +94,9 @@ class ConditionalRandomField(HiddenMarkovModel):
 
         self.A = torch.exp(WA_full)
         self.B = torch.exp(self.WB)
-
+        self.A[self.eos_t, :] = 0.0   # structural zeroes
+        self.A[:, self.bos_t] = 0.0
+        self.B[:, self.bos_t] = 0.0
         # print(f"Transition matrix A after updateAB:\n{self.A}, emission matrix B after updateAB:\n{self.B}")
 
     @override

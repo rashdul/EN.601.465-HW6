@@ -1,0 +1,4 @@
+Wrote tagging to ic_hmm_icraw.output
+Cross-entropy: 1.7950 nats (= perplexity 6.020)
+Tagging accuracy: all: nan%, known: nan%, seen: nan%, novel: nan%
+===

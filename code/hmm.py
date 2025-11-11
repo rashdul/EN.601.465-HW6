@@ -432,7 +432,9 @@ class HiddenMarkovModel:
                     # print(f"We are at tag {t} and next tag {t_next} at position {j}, p(t_next|t) is {self.A[t, t_next]}, p(w_j1|t_next) is {emission_prob}, prob is {prob}, beta[j] is {beta[j]}")
                     # print(f"At position {j}, tag {self.tagset[t]}, next tag {self.tagset[t_next]}, p({self.tagset[t_next]}|{self.tagset[t]}) is {self.A[t, t_next]}, p({w_j1}|{self.tagset[t_next]}) is {emission_prob}, prob is {prob}, beta[{j}][{self.tagset}] is {beta[j]}")
 
-        # Avoid log(0)
+        
+        self.A_counts[:, self.bos_t] = 0
+        self.A_counts[self.eos_t, :] = 0
         log_Z_backward = k 
         
         # print(f"betas are: {beta}")
